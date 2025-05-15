@@ -1,5 +1,6 @@
 package com.example.login4;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,7 +34,15 @@ public class PagoTarjeta extends AppCompatActivity {
         titular = findViewById(R.id.editNombreTitular);
         btnPagar = findViewById(R.id.btnPagar);
 
-        btnPagar.setOnClickListener(v -> actualizarUsuarioAPremium());
+        btnPagar.setOnClickListener(v ->{
+                if (ValidarTarjeta.ValidarNumero(numeroTarjeta.getText().toString()) &&
+                        ValidarTarjeta.ValidarFechaExpiracion(fechaVencimiento.getText().toString()) &&
+                        ValidarTarjeta.ValidarCVV(numeroTarjeta.getText().toString(), codigoSeguridad.getText().toString())) {
+                    actualizarUsuarioAPremium();
+                } else {
+                    Toast.makeText(PagoTarjeta.this, "Tarjeta inválida", Toast.LENGTH_SHORT).show();
+                }
+        });
 
     }
 
@@ -58,6 +67,10 @@ public class PagoTarjeta extends AppCompatActivity {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(PagoTarjeta.this, "Usuario actualizado a Premium", Toast.LENGTH_SHORT).show();
+                    // Redirigir a la actividad HomeActivity
+                    Intent intent = new Intent(PagoTarjeta.this, HomeActivity.class);
+                    intent.putExtra("nuevo_login", false);
+                    startActivity(intent);
                     finish();
                 } else {
                     Toast.makeText(PagoTarjeta.this, "Error al actualizar usuario", Toast.LENGTH_SHORT).show();

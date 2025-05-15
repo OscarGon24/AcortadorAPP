@@ -18,6 +18,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
 
+    //Variables para Google Sign-In
     private static final int RC_SIGN_IN = 123;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -29,6 +30,19 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        // Verifica si ya hay una sesión activa
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            // Ya hay usuario autenticado, redirige a HomeActivity
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            intent.putExtra("nuevo_login", false);
+            startActivity(intent);
+            return;
+        }
+
+        // Si no hay sesión iniciada, continúa con la vista de login
+        setContentView(R.layout.activity_main);
+
+        //Variables para Firebase
         mAuth = FirebaseAuth.getInstance();
         btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
 
@@ -39,18 +53,22 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        //Botón para iniciar sesión con Google
         btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
     }
 
+    //Metodo para iniciar sesión con Google
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    //Metodo para saber que nos responde el  sesión con Google
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        //Si el requestCode es el correcto, obtiene la cuenta de Google
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
@@ -62,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Metodo para autenticar con Firebase
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)

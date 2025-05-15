@@ -28,17 +28,18 @@ import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity {
 
+    //Variables para Google Sign-In
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
+    //Variables para informacion
     ImageView profileImage;
-    TextView txvUsuario, txvIntentos;
+    TextView txvUsuario, txvIntentos, txvLinkNuevo, txvDisponibles;
     Button btnGenerar;
     EditText txvLinkoriginal;
-    TextView txvLinkNuevo;
     Button btnCopiar;
 
-
+    //Variable para intentos
     public  int intentos = 5;
 
     @Override
@@ -46,8 +47,10 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        //Verificar si hay una sesión iniciada
         mAuth = FirebaseAuth.getInstance();
 
+        // Configurar Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -56,7 +59,9 @@ public class HomeActivity extends AppCompatActivity {
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
+        //Verificar si hay una sesión iniciada para cargar la información y enviar a la base de datos
         if (account != null) {
+            // Obtener información del usuario
             String nombre = account.getDisplayName();
             String email = account.getEmail();
             String tipo = "Free";
@@ -66,24 +71,30 @@ public class HomeActivity extends AppCompatActivity {
             txvUsuario = findViewById(R.id.txvUsuario);
             ImageView profileImage = findViewById(R.id.imageViewProfile);
             txvIntentos = findViewById(R.id.txvIntentos);
+            txvDisponibles = findViewById(R.id.txvDisponibles);
 
+            // Mostrar nombre y foto de usuario
             txvUsuario.setText("Hola, " + nombre);
             if (personPhoto != null) {
                 Picasso.get().load(personPhoto).into(profileImage);
             }
 
-            //Cargar intentos
+            //Cargar intentos desde la base segun el email
             UsuarioApi usuarioApi = UsuarioServicio.getUsuarioApi();
             usuarioApi.obtenerIntentos(email).enqueue(new Callback<JsonObject>() {
+
+                //Metodo para obtener intentos
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if (response.isSuccessful() && response.body().get("success").getAsBoolean()) {
                         intentos = response.body().get("intentos").getAsInt();
 
+                        // Mostrar intentos disponibles si es premium o no
                         if (intentos == -1) {
-                            // Usuario premium: ocultamos los intentos
+                            txvDisponibles.setVisibility(View.GONE);
                             txvIntentos.setVisibility(View.GONE);
                         } else {
+                            txvDisponibles.setVisibility(View.VISIBLE);
                             txvIntentos.setText(String.valueOf(intentos));
                             txvIntentos.setVisibility(View.VISIBLE);
                         }
@@ -93,6 +104,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
 
+                //Metodo para saber si hubo error
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Toast.makeText(HomeActivity.this, "Error al obtener intentos", Toast.LENGTH_SHORT).show();
@@ -100,32 +112,37 @@ public class HomeActivity extends AppCompatActivity {
             });
 
 
-            // Configurar el clic en la imagen de perfil
+            // Click en la foto para llamar al modal
             profileImage.setOnClickListener(v -> {
                 Modal modal = new Modal();
                 modal.setModalListener(HomeActivity.this::signOut);
                 modal.show(getSupportFragmentManager(), "modal");
             });
 
+            //Si es nuevo login, crear usuario en la base de datos
             if (getIntent().getBooleanExtra("nuevo_login", true)) {
                 Usuario nuevoUsuario = new Usuario(nombre, email, tipo, 5);
                 enviarUsuarioAlServidor(nuevoUsuario);
             }
 
+            //Mostrar datos en la consola para saber que se estan cargando los datos correctamente
             Log.d("DEBUG", "Nombre: " + nombre);
             Log.d("DEBUG", "Email: " + email);
             Log.d("DEBUG", "Tipo: " + tipo);
             Log.d("DEBUG", "Intentos: " + intentos);
         }
 
+        //Metodo para generar el acortador
         generarAcortador();
     }
 
+    //Metodo para enviar usuario a la base de datos
     private void enviarUsuarioAlServidor(Usuario usuario) {
         UsuarioApi usuarioApi = UsuarioServicio.getUsuarioApi();
         Call<JsonObject> call = usuarioApi.crearUsuario(usuario);
-
         call.enqueue(new Callback<JsonObject>() {
+
+            //Metodo para saber si se envio correctamente
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
@@ -146,7 +163,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-
+    //Metodo para cerrar sesión
     private void signOut() {
         // Cerrar sesión en Firebase
         mAuth.signOut();
@@ -161,38 +178,44 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    //Metodo para generar el acortador
     private void generarAcortador(){
+        //Variables para acortador
         txvLinkoriginal = findViewById(R.id.txvLinkoriginal);
         txvLinkNuevo = findViewById(R.id.txvLinkNuevo);
         btnGenerar = findViewById(R.id.btnGenerar);
 
+        //Generar acortador al dar click
         btnGenerar.setOnClickListener(v -> {
+
+            //Validacion de intentos
             if (intentos == 0){
                 txvLinkNuevo.setText("Ya no tienes intentos");
                 return;
             }
 
-            //Actualizar intentos
+            //Actualizar intentos del usuario en la base de datos
             UsuarioApi usuarioApi = UsuarioServicio.getUsuarioApi();
             String email = mAuth.getCurrentUser().getEmail();
             JsonObject json = new JsonObject();
             json.addProperty("email", email);
+
+            //Mensahe para saber que se estan actualizando los intentos
             usuarioApi.actualizarIntentos(json).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     Log.d("TAG", "Intentos actualizados");
                 }
-
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Log.e("TAG", "Error al actualizar intentos: " + t.getMessage());
                 }
             });
 
-
+            //Validacion de enlace
             String originalUrl = txvLinkoriginal.getText().toString().trim();
-            if (originalUrl.isEmpty()) {
-                txvLinkNuevo.setText("Introduce una URL válida");
+            if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
+                txvLinkNuevo.setText("El enlace debe comenzar con http:// o https://");
                 return;
             }
 
@@ -200,15 +223,14 @@ public class HomeActivity extends AppCompatActivity {
             ApiService apiService = ApiClient.getRetrofit().create(ApiService.class);
             UrlRequest urlRequest = new UrlRequest(originalUrl);
 
+            //Realizar peticion
             Call<UrlResponse> call = apiService.shortenUrl(urlRequest);
             call.enqueue(new Callback<UrlResponse>() {
                 @Override
                 public void onResponse(Call<UrlResponse> call, Response<UrlResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         UrlResponse result = response.body();
-                        txvLinkNuevo.setText("http://acortadorphp-production.up.railway.app/" + result.getSlug());
-
-
+                        txvLinkNuevo.setText("http://ojglez.com/" + result.getSlug());
                         intentos--;
                         txvIntentos.setText(String.valueOf(intentos));
                     } else {
@@ -223,6 +245,7 @@ public class HomeActivity extends AppCompatActivity {
             });
         });
 
+        //Boton para copiar el link
         btnCopiar = findViewById(R.id.btnCopiar);
         btnCopiar.setOnClickListener(view -> {
             String textoACopiar = txvLinkNuevo.getText().toString();
@@ -238,6 +261,5 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(this, "Nada que copiar", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }
