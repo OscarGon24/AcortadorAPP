@@ -69,6 +69,7 @@
         android:id="@+id/txvIntentos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="5"
         android:textSize="24dp"
         app:layout_constraintBottom_toTopOf="@+id/txvLinkoriginal"
         app:layout_constraintEnd_toEndOf="parent"
