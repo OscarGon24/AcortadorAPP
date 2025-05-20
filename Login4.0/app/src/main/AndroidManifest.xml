@@ -18,6 +18,9 @@
             android:name=".PagoTarjeta"
             android:exported="false" />
         <activity
+            android:name=".HistorialActivity"
+            android:exported="false" />
+        <activity
             android:name=".Modal"
             android:exported="false" />
         <activity

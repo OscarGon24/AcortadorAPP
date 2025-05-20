@@ -1,9 +1,13 @@
 package com.example.login4;
 
-public class UrlResponse {
-    private String slug;
+public class HistorialItem {
+    String slug;
     private String url;
-    private String short_url;
+
+    public HistorialItem(String slug, String url) {
+        this.slug = slug;
+        this.url = url;
+    }
 
     public String getSlug() {
         return slug;
@@ -12,8 +16,5 @@ public class UrlResponse {
     public String getUrl() {
         return url;
     }
-
-    public String getShort_url() {
-        return short_url;
-    }
 }
+

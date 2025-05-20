@@ -34,7 +34,7 @@ public class HomeActivity extends AppCompatActivity {
 
     //Variables para informacion
     ImageView profileImage;
-    TextView txvUsuario, txvIntentos, txvLinkNuevo, txvDisponibles;
+    TextView txvUsuario, txvIntentos, txvLinkNuevo, txvDisponibles, txvHistorial;
     Button btnGenerar;
     EditText txvLinkoriginal;
     Button btnCopiar;
@@ -72,6 +72,7 @@ public class HomeActivity extends AppCompatActivity {
             ImageView profileImage = findViewById(R.id.imageViewProfile);
             txvIntentos = findViewById(R.id.txvIntentos);
             txvDisponibles = findViewById(R.id.txvDisponibles);
+            txvHistorial = findViewById(R.id.txvHistorial);
 
             // Mostrar nombre y foto de usuario
             txvUsuario.setText("Hola, " + nombre);
@@ -124,6 +125,12 @@ public class HomeActivity extends AppCompatActivity {
                 Usuario nuevoUsuario = new Usuario(nombre, email, tipo, 5);
                 enviarUsuarioAlServidor(nuevoUsuario);
             }
+
+            // Click en el botón de historial
+            txvHistorial.setOnClickListener(v -> {
+                Intent intent = new Intent(HomeActivity.this, HistorialActivity.class);
+                startActivity(intent);
+            });
 
             //Mostrar datos en la consola para saber que se estan cargando los datos correctamente
             Log.d("DEBUG", "Nombre: " + nombre);
@@ -221,7 +228,7 @@ public class HomeActivity extends AppCompatActivity {
 
             // Llama a la API
             ApiService apiService = ApiClient.getRetrofit().create(ApiService.class);
-            UrlRequest urlRequest = new UrlRequest(originalUrl);
+            UrlRequest urlRequest = new UrlRequest(originalUrl, email);
 
             //Realizar peticion
             Call<UrlResponse> call = apiService.shortenUrl(urlRequest);

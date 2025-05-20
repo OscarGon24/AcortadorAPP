@@ -37,18 +37,34 @@
         app:shapeAppearanceOverlay="@style/roundedImageView" />
 
     <!--Intentos-->
+
+    <TextView
+        android:id="@+id/txvHistorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Historial"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/txvIntentos"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewProfile"
+        app:layout_constraintVertical_bias="0.397" />
+
     <TextView
         android:id="@+id/txvDisponibles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Intenstos disponibles:"
+        android:text="Intentos disponibles:"
         android:textSize="24dp"
         app:layout_constraintBottom_toTopOf="@+id/txvLinkoriginal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.04"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.693" />
+        app:layout_constraintVertical_bias="0.556" />
+
+    <!--Acortador-->
     <TextView
         android:id="@+id/txvIntentos"
         android:layout_width="wrap_content"
@@ -56,23 +72,35 @@
         android:textSize="24dp"
         app:layout_constraintBottom_toTopOf="@+id/txvLinkoriginal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.786"
+        app:layout_constraintHorizontal_bias="0.931"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.693" />
+        app:layout_constraintVertical_bias="0.556" />
 
-    <!--Acortador-->
+    <!--Link Generado-->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pon tu enlace aquí..."
+        app:layout_constraintBottom_toTopOf="@+id/txvLinkoriginal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txvDisponibles"
+        app:layout_constraintVertical_bias="0.202" />
+
     <EditText
         android:id="@+id/txvLinkoriginal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Pon tu enlace aquí..."
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.183" />
+        app:layout_constraintVertical_bias="0.327" />
+
     <Button
         android:id="@+id/btnGenerar"
         android:layout_width="wrap_content"
@@ -80,12 +108,10 @@
         android:text="Generar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.271" />
+        app:layout_constraintVertical_bias="0.597" />
 
-    <!--Link Generado-->
     <TextView
         android:id="@+id/txvLinkNuevo"
         android:layout_width="wrap_content"
@@ -96,6 +122,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
+
     <Button
         android:id="@+id/btnCopiar"
         android:layout_width="wrap_content"
@@ -103,10 +130,10 @@
         android:text="Copiar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.522"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txvLinkNuevo"
-        app:layout_constraintVertical_bias="0.098" />
+        app:layout_constraintVertical_bias="0.789" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
